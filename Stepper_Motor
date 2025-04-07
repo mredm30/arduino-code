@@ -1,0 +1,71 @@
+//PINS for motor 
+const int dirPin = 12;   // Direction pin
+const int stepPin = 13;  // Step pin
+
+// Direction constants
+const int COUNTERCLOCKWISE = 1;
+const int CLOCKWISE = 0;
+
+//Global Variables 
+bool isCycleActive = false; 
+
+//we can change all fo these to adjsut for speed ect. 
+const int linearSpeedA = 0;   //cointer clockwise rotation
+const int linearSpeedC = 0;     //clockwise rotation
+const int stationaryTimeB = 0;    //leaving it stationary to pick up the balls 
+const int repetitionCountD = 0;   //no. times to repeat 
+
+// Lead screw parameters
+const int effectiveLeadScrewPitch = 8; // Pitch of the lead screw in millimeters per revolution
+const int stepsPerRevolution = 16*200; // Number of steps per revolution of the stepper motor
+
+// Desired linear distance in milimeters
+const int desiredLinearDistance = 100; // Desired linear distance in milimeters
+
+void setup() {
+  // Set the motor control pins as outputs
+  pinMode(dirPin, OUTPUT);
+  pinMode(stepPin, OUTPUT);
+}
+
+// Function to set the motor direction
+void setMotorDirection(int direction) {
+  digitalWrite(dirPin, direction);
+}
+
+// Function to step the motor down
+void stepMotorA(int steps, int linearSpeedA) {
+  // Calculate the delay between steps based on the linear speed
+  unsigned long stepDelayA = 1000000 / (linearSpeedA * stepsPerRevolution / effectiveLeadScrewPitch);
+
+  for (int i = 0; i < steps; i++) {
+    digitalWrite(stepPin, HIGH);
+    delayMicroseconds(stepDelayA);
+    digitalWrite(stepPin, LOW);
+    delayMicroseconds(stepDelayA);
+  }
+}
+
+// Function to step the motor up
+void stepMotorC(int steps, int linearSpeedC) {
+  // Calculate the delay between steps based on the linear speed
+  unsigned long stepDelayC = 1000000 / (linearSpeedC * stepsPerRevolution / effectiveLeadScrewPitch);
+
+  for (int i = 0; i < steps; i++) {
+    digitalWrite(stepPin, HIGH);
+    delayMicroseconds(stepDelayC);
+    digitalWrite(stepPin, LOW);
+    delayMicroseconds(stepDelayC);
+  }
+}
+
+// Function to convert desired linear distance to steps
+int linearDistanceToSteps(float desiredLinearDistance) {
+  // Calculate the number of revolutions needed
+  float revolutions = desiredLinearDistance / effectiveLeadScrewPitch;
+
+  // Calculate the number of steps required based on revolutions
+  int steps = revolutions * stepsPerRevolution;
+
+  return abs(steps);
+}
